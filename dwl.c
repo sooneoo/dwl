@@ -273,6 +273,7 @@ static void arrange(Monitor *m);
 static void arrangelayer(Monitor *m, struct wl_list *list,
 		struct wlr_box *usable_area, int exclusive);
 static void arrangelayers(Monitor *m);
+static void autostartexec(void);
 static void axisnotify(struct wl_listener *listener, void *data);
 static bool baracceptsinput(struct wlr_scene_buffer *buffer, double *sx, double *sy);
 static void bufdestroy(struct wlr_buffer *buffer);
@@ -366,6 +367,7 @@ static void setsel(struct wl_listener *listener, void *data);
 static void setup(void);
 static void spawn(const Arg *arg);
 static void startdrag(struct wl_listener *listener, void *data);
+//static int statusin(void *data);
 static int statusin(int fd, unsigned int mask, void *data);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
@@ -501,6 +503,9 @@ static struct wlr_xwayland *xwayland;
 
 /* attempt to encapsulate suck into one file */
 #include "client.h"
+
+static pid_t *autostart_pids;
+static size_t autostart_len;
 
 /* function implementations */
 void
@@ -651,6 +656,27 @@ arrangelayers(Monitor *m)
 			client_notify_enter(l->layer_surface->surface, wlr_seat_get_keyboard(seat));
 			return;
 		}
+	}
+}
+
+void
+autostartexec(void) {
+	const char *const *p;
+	size_t i = 0;
+
+	/* count entries */
+	for (p = autostart; *p; autostart_len++, p++)
+		while (*++p);
+
+	autostart_pids = calloc(autostart_len, sizeof(pid_t));
+	for (p = autostart; *p; i++, p++) {
+		if ((autostart_pids[i] = fork()) == 0) {
+			setsid();
+			execvp(*p, (char *const *)p);
+			die("dwl: execvp %s:", *p);
+		}
+		/* skip arguments */
+		while (*++p);
 	}
 }
 
@@ -1566,9 +1592,7 @@ dirtomon(enum wlr_direction dir)
 	return selmon;
 }
 
-void
-drawbar(Monitor *m)
-{
+void drawbar(Monitor *m) {
 	int x, w, tw = 0;
 	int boxs = m->drw->font->height / 9;
 	int boxw = m->drw->font->height / 6 + 2;
@@ -2490,6 +2514,7 @@ run(char *startup_cmd)
 		die("startup: backend_start");
 
 	/* Now that the socket exists and the backend is started, run the startup command */
+	autostartexec();
 	if (startup_cmd) {
 		if ((child_pid = fork()) < 0)
 			die("startup: fork:");
@@ -2667,16 +2692,37 @@ setsel(struct wl_listener *listener, void *data)
 	wlr_seat_set_selection(seat, event->source, event->serial);
 }
 
-void
-setup(void)
-{
+int statusin(int fd, unsigned int mask, void *data) {
+	char status[1024];
+	ssize_t n;
+
+	if (mask & WL_EVENT_ERROR)
+		die("status in event error");
+	if (mask & WL_EVENT_HANGUP)
+		wl_event_source_remove(status_event_source);
+
+	n = read(fd, status, sizeof(status) - 1);
+	if (n < 0 && errno != EWOULDBLOCK)
+		die("read:");
+
+	status[n] = '\0';
+	status[strcspn(status, "\n")] = '\0';
+
+	strncpy(stext, status, sizeof(stext));
+	drawbars();
+
+	return 0;
+}
+
+
+void setup(void) {
 	int drm_fd, i, sig[] = {SIGCHLD, SIGINT, SIGTERM, SIGPIPE};
 	struct sigaction sa = {.sa_flags = SA_RESTART, .sa_handler = handlesig};
 	sigemptyset(&sa.sa_mask);
 
-	for (i = 0; i < (int)LENGTH(sig); i++)
+	for (i = 0; i < (int)LENGTH(sig); i++) {
 		sigaction(sig[i], &sa, NULL);
-
+    }
 
 	wlr_log_init(log_level, NULL);
 
@@ -2874,6 +2920,9 @@ setup(void)
 
 	drwl_init();
 
+    //status_event_source = wl_event_loop_add_timer(event_loop, statusin, NULL);
+	//wl_event_source_timer_update(status_event_source, 500);
+
 	status_event_source = wl_event_loop_add_fd(wl_display_get_event_loop(dpy),
 		STDIN_FILENO, WL_EVENT_READABLE, statusin, NULL);
 
@@ -2920,29 +2969,6 @@ startdrag(struct wl_listener *listener, void *data)
 	LISTEN_STATIC(&drag->icon->events.destroy, destroydragicon);
 }
 
-int
-statusin(int fd, unsigned int mask, void *data)
-{
-	char status[1024];
-	ssize_t n;
-
-	if (mask & WL_EVENT_ERROR)
-		die("status in event error");
-	if (mask & WL_EVENT_HANGUP)
-		wl_event_source_remove(status_event_source);
-
-	n = read(fd, status, sizeof(status) - 1);
-	if (n < 0 && errno != EWOULDBLOCK)
-		die("read:");
-
-	status[n] = '\0';
-	status[strcspn(status, "\n")] = '\0';
-
-	strncpy(stext, status, sizeof(stext));
-	drawbars();
-
-	return 0;
-}
 
 void
 tag(const Arg *arg)
@@ -3196,8 +3222,10 @@ updatemons(struct wl_listener *listener, void *data)
 		}
 	}
 
-	if (stext[0] == '\0')
-		strncpy(stext, "dwl-"VERSION, sizeof(stext));
+	if (stext[0] == '\0') {
+		//strncpy(stext, "dwl-"VERSION, sizeof(stext));
+    }
+
 	wl_list_for_each(m, &mons, link) {
 		updatebar(m);
 		drawbar(m);

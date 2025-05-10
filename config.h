@@ -15,19 +15,32 @@ static const float urgentcolor[]           = COLOR(0xff0000ff);
 static const char *fonts[]                 = {"monospace:size=10"};
 
 enum { SchemeNorm, SchemeSel, SchemeUrg }; /* color schemes */
+
 static uint32_t colors[][3]                = {
 	/*               fg          bg          border    */
-	[SchemeNorm] = { 0xbbbbbbff, 0x222222ff, 0x444444ff },
-	[SchemeSel]  = { 0xeeeeeeff, 0x005577ff, 0x005577ff },
+                                 
+	[SchemeNorm] = { 0xbbbbbbff, 0x3A3833FF, 0x3A3833FF },
+	[SchemeSel]  = { 0xeeeeeeff, 0xA2741BFF, 0x3A3833FF },
 	[SchemeUrg]  = { 0,          0,          0x770000ff },
 };
 
 
-
 /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
-static const float fullscreen_bg[]         = {0.1f, 0.1f, 0.1f, 1.0f}; /* You can also use glsl colors */
+static const float fullscreen_bg[] = {0.1f, 0.1f, 0.1f, 1.0f}; /* You can also use glsl colors */
 
-static char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8" };
+
+
+static const char *const autostart[] = {
+    "swayidle", "-w",
+    //"timeout", "300", "swaylock -f -c 000000",
+    //"timeout", "600", "swaymsg 'output * dpms off'",
+    //"resume", "swaymsg 'output * dpms on'",
+    "before-sleep", "swaylock -f -c 000000", NULL
+
+    ,"swaybg", "-i", "/home/petr/Obrázky/Wallpaper.png", "-m", "fill", NULL
+    , NULL /* terminate */
+};
 
 
 /* logging */
@@ -126,64 +139,83 @@ static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TA
 
 /* If you want to use the windows key for MODKEY, use WLR_MODIFIER_LOGO */
 #define MODKEY WLR_MODIFIER_LOGO
-
+/*
 #define TAGKEYS(KEY,SKEY,TAG) \
 	{ MODKEY,                    KEY,            view,            {.ui = 1 << TAG} }, \
 	{ MODKEY|WLR_MODIFIER_CTRL,  KEY,            toggleview,      {.ui = 1 << TAG} }, \
 	{ MODKEY|WLR_MODIFIER_SHIFT, SKEY,           tag,             {.ui = 1 << TAG} }, \
 	{ MODKEY|WLR_MODIFIER_CTRL|WLR_MODIFIER_SHIFT,SKEY,toggletag, {.ui = 1 << TAG} }
+*/
 
+#define TAGKEYS(KEY, SKEY, TAG) \
+	{ MODKEY,                    KEY,            view,            {.ui = 1 << TAG} }, \
+	{ MODKEY|WLR_MODIFIER_SHIFT, SKEY,            tag,             {.ui = 1 << TAG} } \
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *termcmd[] = { "alacritty", NULL };
-static const char *menucmd[] = { "bemenu-run", NULL };
+static const char * termcmd[] = { "alacritty", NULL };
+static const char * menucmd[] = { "bemenu-run", NULL };
+static const char * volumeup[] = {"amixer", "-q", "sset", "Master", "5%+", NULL };
+static const char * volumedown[] = {"amixer", "-q", "sset", "Master", "5%-", NULL };
+static const char * volumemute[] = {"amixer", "-q", "sset", "Master", "toggle", NULL};
+static const char * screenshot[] = {"slurp", "|", "grim", "-g", "-" ,"screenshot.png", NULL};
+static const char * brightnessup[] = {"light", "-A", "5", NULL};
+static const char * brightnessdown[] = {"light", "-U", "5", NULL};
+
+
+/* Ctrl-Alt-Fx is used to switch to another VT, if you don't know what a VT is
+ * do not remove them.
+ */
+#define CHVT(n) { WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,XKB_KEY_XF86Switch_VT_##n, chvt, {.ui = (n)} }
 
 static const Key keys[] = {
 	/* Note that Shift changes certain key codes: c -> C, 2 -> at, etc. */
 	/* modifier                  key                 function        argument */
-	{ MODKEY,                    XKB_KEY_p,          spawn,          {.v = menucmd} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Return,     spawn,          {.v = termcmd} },
-	{ MODKEY,                    XKB_KEY_Tab,        focusstack,     {.i = +1} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Tab,        focusstack,     {.i = -1} },
-	{ MODKEY,                    XKB_KEY_b,          togglebar,      {0} },
-	{ MODKEY,                    XKB_KEY_i,          incnmaster,     {.i = +1} },
-	{ MODKEY,                    XKB_KEY_d,          incnmaster,     {.i = -1} },
-	{ MODKEY,                    XKB_KEY_h,          setmfact,       {.f = -0.05f} },
-	{ MODKEY,                    XKB_KEY_l,          setmfact,       {.f = +0.05f} },
-	{ MODKEY,                    XKB_KEY_Return,     zoom,           {0} },
-	{ MODKEY,                    XKB_KEY_Tab,        view,           {0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_C,          killclient,     {0} },
-	{ MODKEY,                    XKB_KEY_t,          setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                    XKB_KEY_f,          setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                    XKB_KEY_m,          setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                    XKB_KEY_space,      setlayout,      {0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,      togglefloating, {0} },
-	{ MODKEY,                    XKB_KEY_e,         togglefullscreen, {0} },
-	{ MODKEY,                    XKB_KEY_0,          view,           {.ui = ~0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_parenright, tag,            {.ui = ~0} },
-	{ MODKEY,                    XKB_KEY_comma,      focusmon,       {.i = WLR_DIRECTION_LEFT} },
-	{ MODKEY,                    XKB_KEY_period,     focusmon,       {.i = WLR_DIRECTION_RIGHT} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_less,       tagmon,         {.i = WLR_DIRECTION_LEFT} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_greater,    tagmon,         {.i = WLR_DIRECTION_RIGHT} },
-	TAGKEYS(          XKB_KEY_1, XKB_KEY_exclam,                     0),
-	TAGKEYS(          XKB_KEY_2, XKB_KEY_at,                         1),
-	TAGKEYS(          XKB_KEY_3, XKB_KEY_numbersign,                 2),
-	TAGKEYS(          XKB_KEY_4, XKB_KEY_dollar,                     3),
-	TAGKEYS(          XKB_KEY_5, XKB_KEY_percent,                    4),
-	TAGKEYS(          XKB_KEY_6, XKB_KEY_asciicircum,                5),
-	TAGKEYS(          XKB_KEY_7, XKB_KEY_ampersand,                  6),
-	TAGKEYS(          XKB_KEY_8, XKB_KEY_asterisk,                   7),
-	TAGKEYS(          XKB_KEY_9, XKB_KEY_parenleft,                  8),
-	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Q,          quit,           {0} },
+	{ MODKEY,                    XKB_KEY_p,                        spawn,          {.v = menucmd} },
+	{ MODKEY,                    XKB_KEY_Return,                   spawn,          {.v = termcmd} },
+    { 0,                         XKB_KEY_XF86AudioRaiseVolume,     spawn,          {.v = volumeup } },
+    { 0,                         XKB_KEY_XF86AudioLowerVolume,     spawn,          {.v = volumedown } },
+    { 0,                         XKB_KEY_XF86AudioMute,            spawn,          {.v = volumemute } },	
+    { 0,                         XKB_KEY_XF86MonBrightnessUp,      spawn,          {.v = brightnessup } },
+    { 0,                         XKB_KEY_XF86MonBrightnessDown,    spawn,          {.v = brightnessdown } },
+    { MODKEY|WLR_MODIFIER_ALT,   XKB_KEY_l,                        spawn,          {.v = screenshot} },
+
+    { MODKEY,                    XKB_KEY_Tab,                      focusstack,     {.i = +1} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_ISO_Left_Tab,             focusstack,     {.i = -1} },
+	{ MODKEY,                    XKB_KEY_b,                        togglebar,      {0} },
+	{ MODKEY,                    XKB_KEY_i,                        incnmaster,     {.i = +1} },
+	{ MODKEY,                    XKB_KEY_d,                        incnmaster,     {.i = -1} },
+	{ MODKEY,                    XKB_KEY_h,                        setmfact,       {.f = -0.05f} },
+	{ MODKEY,                    XKB_KEY_l,                        setmfact,       {.f = +0.05f} },
+	{ MODKEY,                    XKB_KEY_j,                        zoom,           {0} },
+	{ MODKEY,                    XKB_KEY_k,                        view,           {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_Q,                        killclient,     {0} },
+	{ MODKEY,                    XKB_KEY_t,                        setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                    XKB_KEY_f,                        setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                    XKB_KEY_w,                        setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                    XKB_KEY_space,                    setlayout,      {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,                    togglefloating, {0} },
+	{ MODKEY,                    XKB_KEY_e,                        togglefullscreen, {0} },
+	{ MODKEY,                    XKB_KEY_0,                        view,           {.ui = ~0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_parenright,               tag,            {.ui = ~0} },
+	{ MODKEY,                    XKB_KEY_comma,                    focusmon,       {.i = WLR_DIRECTION_LEFT} },
+	{ MODKEY,                    XKB_KEY_period,                   focusmon,       {.i = WLR_DIRECTION_RIGHT} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_less,                     tagmon,         {.i = WLR_DIRECTION_LEFT} },
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_greater,                  tagmon,         {.i = WLR_DIRECTION_RIGHT} },
+    TAGKEYS(XKB_KEY_plus, XKB_KEY_1, 0),
+    TAGKEYS(XKB_KEY_ecaron, XKB_KEY_2, 1),
+    TAGKEYS(XKB_KEY_scaron, XKB_KEY_3, 2),
+    TAGKEYS(XKB_KEY_ccaron, XKB_KEY_4, 3),
+    TAGKEYS(XKB_KEY_rcaron, XKB_KEY_5, 4),
+    TAGKEYS(XKB_KEY_zcaron, XKB_KEY_6, 5),
+    TAGKEYS(XKB_KEY_yacute, XKB_KEY_7, 6),
+    TAGKEYS(XKB_KEY_aacute, XKB_KEY_8, 7),
+
+	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_E,          quit,           {0} },
 
 	/* Ctrl-Alt-Backspace and Ctrl-Alt-Fx used to be handled by X server */
 	{ WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,XKB_KEY_Terminate_Server, quit, {0} },
-	/* Ctrl-Alt-Fx is used to switch to another VT, if you don't know what a VT is
-	 * do not remove them.
-	 */
-#define CHVT(n) { WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,XKB_KEY_XF86Switch_VT_##n, chvt, {.ui = (n)} }
 	CHVT(1), CHVT(2), CHVT(3), CHVT(4), CHVT(5), CHVT(6),
 	CHVT(7), CHVT(8), CHVT(9), CHVT(10), CHVT(11), CHVT(12),
 };
