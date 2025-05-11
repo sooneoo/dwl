@@ -162,7 +162,7 @@ static const char * volumemute[] = {"amixer", "-q", "sset", "Master", "toggle", 
 static const char * screenshot[] = {"slurp", "|", "grim", "-g", "-" ,"screenshot.png", NULL};
 static const char * brightnessup[] = {"light", "-A", "5", NULL};
 static const char * brightnessdown[] = {"light", "-U", "5", NULL};
-
+static const char * screenlock[] = {"swaylock", "-f", "-c", "000000", NULL};
 
 /* Ctrl-Alt-Fx is used to switch to another VT, if you don't know what a VT is
  * do not remove them.
@@ -179,7 +179,8 @@ static const Key keys[] = {
     { 0,                         XKB_KEY_XF86AudioMute,            spawn,          {.v = volumemute } },	
     { 0,                         XKB_KEY_XF86MonBrightnessUp,      spawn,          {.v = brightnessup } },
     { 0,                         XKB_KEY_XF86MonBrightnessDown,    spawn,          {.v = brightnessdown } },
-    { MODKEY|WLR_MODIFIER_ALT,   XKB_KEY_l,                        spawn,          {.v = screenshot} },
+    { MODKEY|WLR_MODIFIER_ALT,   XKB_KEY_s,                        spawn,          {.v = screenshot} },
+    { MODKEY,                    XKB_KEY_l,                        spawn,          {.v = screenlock} },
 
     { MODKEY,                    XKB_KEY_Tab,                      focusstack,     {.i = +1} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_ISO_Left_Tab,             focusstack,     {.i = -1} },
