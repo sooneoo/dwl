@@ -7,6 +7,8 @@
 static const int sloppyfocus               = 1;  /* focus follows mouse */
 static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
 static const unsigned int borderpx         = 1;  /* border pixel of windows */
+static const unsigned int systrayspacing   = 2; /* systray spacing */
+static const int showsystray               = 1; /* 0 means no systray */
 static const float rootcolor[]             = COLOR(0x222222ff);
 static const float bordercolor[]           = COLOR(0x444444ff);
 static const float focuscolor[]            = COLOR(0x005577ff);
@@ -233,6 +235,8 @@ static const Button buttons[] = {
 	{ ClkTagBar,   0,      BTN_RIGHT,  toggleview,     {0} },
 	{ ClkTagBar,   MODKEY, BTN_LEFT,   tag,            {0} },
 	{ ClkTagBar,   MODKEY, BTN_RIGHT,  toggletag,      {0} },
+	{ ClkTray,     0,      BTN_LEFT,   trayactivate,   {0} },
+	{ ClkTray,     0,      BTN_RIGHT,  traymenu,       {0} },
 };
 
 

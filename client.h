@@ -5,6 +5,8 @@
  * that they will simply compile out if the chosen #defines leave them unused.
  */
 
+
+
 /* Leave these functions first; they're used in the others */
 static inline int
 client_is_x11(Client *c)
@@ -140,7 +142,6 @@ client_get_clip(Client *c, struct wlr_box *clip)
 		.width = c->geom.width - c->bw,
 		.height = c->geom.height - c->bw,
 	};
-
 #ifdef XWAYLAND
 	if (client_is_x11(c))
 		return;
@@ -162,6 +163,7 @@ client_get_geometry(Client *c, struct wlr_box *geom)
 		return;
 	}
 #endif
+
 	*geom = c->surface.xdg->geometry;
 }
 
@@ -358,7 +360,7 @@ client_set_tiled(Client *c, uint32_t edges)
 {
 #ifdef XWAYLAND
 	if (client_is_x11(c)) {
-		wlr_xwayland_surface_set_maximized(c->surface.xwayland,
+            wlr_xwayland_surface_set_maximized(c->surface.xwayland,
 				edges != WLR_EDGE_NONE, edges != WLR_EDGE_NONE);
 		return;
   }

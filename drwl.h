@@ -27,8 +27,8 @@
  * Copyright (c) 2008-2010 Bjoern Hoehrmann <bjoern@hoehrmann.de>
  * See http://bjoern.hoehrmann.de/utf-8/decoder/dfa/ for details.
  */
-#pragma once
-
+#ifndef _DRWL_H_
+#define _DRWL_H_
 #include <stdlib.h>
 #include <fcft/fcft.h>
 #include <pixman-1/pixman.h>
@@ -309,3 +309,5 @@ drwl_fini(void)
 {
 	fcft_fini();
 }
+
+#endif
