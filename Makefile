@@ -93,15 +93,15 @@ exec: all
 
 
 install:
-	mkdir -p $(DESTDIR)$(PREFIX)/bin
-	rm -f $(DESTDIR)$(PREFIX)/bin/$(TARGET)
-	cp -f $(OUTPUT)/$(TARGET) $(DESTDIR)$(PREFIX)/bin
+	mkdir -pv $(DESTDIR)$(PREFIX)/bin
+	rm -fv $(DESTDIR)$(PREFIX)/bin/$(TARGET)
+	cp -fv $(OUTPUT)/$(TARGET) $(DESTDIR)$(PREFIX)/bin
 	chmod 755 $(DESTDIR)$(PREFIX)/bin/$(TARGET)
-	mkdir -p $(DESTDIR)$(MANDIR)/man1
-	cp -f dwl.1 $(DESTDIR)$(MANDIR)/man1
+	mkdir -pv $(DESTDIR)$(MANDIR)/man1
+	cp -fv dwl.1 $(DESTDIR)$(MANDIR)/man1
 	chmod 644 $(DESTDIR)$(MANDIR)/man1/dwl.1
-	mkdir -p $(DESTDIR)$(DATADIR)/wayland-sessions
-	cp -f dwl.desktop $(DESTDIR)$(DATADIR)/wayland-sessions/dwl.desktop
+	mkdir -pv $(DESTDIR)$(DATADIR)/wayland-sessions
+	cp -fv dwl.desktop $(DESTDIR)$(DATADIR)/wayland-sessions/dwl.desktop
 	chmod 644 $(DESTDIR)$(DATADIR)/wayland-sessions/dwl.desktop
 
 env:

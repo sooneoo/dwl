@@ -19,16 +19,16 @@ dwl has the following dependencies:
 - xkbcommon
 - wayland-protocols (compile-time only)
 - pkg-config (compile-time only)
+- tllist
+- fcft
+- pixman
+- libdbus
 
 dwl has the following additional dependencies if XWayland support is enabled:
 - libxcb
 - libxcb-wm
 - wlroots (compiled with X11 support)
 - Xwayland (runtime only)
-- tllist
-- fcft
-- pixman
-- libdbus
 
 Install these (and their `-devel` versions if your distro has separate
 development packages) and run `make`. If you wish to build against a released
@@ -36,7 +36,7 @@ version of wlroots (*you probably do*), use a [release] or a [0.x branch]. If
 you want to use the unstable development `main` branch, you need to use the git
 version of [wlroots].
 
-To enable XWayland, you should uncomment its flags in `config.mk`.
+To enable XWayland, you should uncomment its flags in `Makefile`.
 
 ## Configuration
 
@@ -44,9 +44,6 @@ All configuration is done by editing `config.h` and recompiling, in the same
 manner as dwm. There is no way to separately restart the window manager in
 Wayland without restarting the entire display server, so any changes will take
 effect the next time dwl is executed.
-
-As in the dwm community, we encourage users to share patches they have
-created. Check out the [dwl-patches] repository!
 
 ## Running dwl
 
