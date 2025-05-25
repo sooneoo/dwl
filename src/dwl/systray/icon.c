@@ -1,4 +1,4 @@
-#include "icon.h"
+#include "systray/icon.h"
 
 #include <fcft/fcft.h>
 #include <pixman.h>

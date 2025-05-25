@@ -1,6 +1,6 @@
-#include "dbus.h"
+#include "systray/dbus.h"
 
-#include "util.h"
+#include "util/util.h"
 
 #include <dbus/dbus.h>
 #include <stdlib.h>

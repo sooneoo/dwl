@@ -1,8 +1,8 @@
-#include "item.h"
+#include "systray/item.h"
 
-#include "helpers.h"
-#include "icon.h"
-#include "watcher.h"
+#include "systray/helpers.h"
+#include "systray/icon.h"
+#include "systray/watcher.h"
 
 #include <dbus/dbus.h>
 

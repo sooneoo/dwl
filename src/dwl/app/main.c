@@ -71,9 +71,9 @@
 #include <xcb/xcb_icccm.h>
 #endif
 
-#include "util.h"
+#include "util/util.h"
 #include "drwl.h"
-#include "dbus.h"
+#include "systray/dbus.h"
 #include "systray/tray.h"
 #include "systray/watcher.h"
 
@@ -511,7 +511,7 @@ static struct wlr_xwayland *xwayland;
 #endif
 
 /* configuration, allows nested code to access above variables */
-#include "config.h"
+#include "config/config.h"
 
 /* attempt to encapsulate suck into one file */
 #include "client.h"

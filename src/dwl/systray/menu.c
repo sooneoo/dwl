@@ -1,4 +1,4 @@
-#include "menu.h"
+#include "systray/menu.h"
 
 #include <dbus/dbus.h>
 #include <wayland-server-core.h>

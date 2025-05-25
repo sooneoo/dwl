@@ -1,4 +1,4 @@
-#include "helpers.h"
+#include "systray/helpers.h"
 
 #include <dbus/dbus.h>
 

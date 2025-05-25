@@ -1,0 +1,21 @@
+.cache/main.o: src/dwl/app/main.c src/include/util/util.h src/dwl/app/drwl.h \
+ src/include/systray/dbus.h src/include/systray/tray.h \
+ src/include/systray/watcher.h src/include/systray/watcher.h \
+ src/include/config/config.h src/dwl/app/client.h
+.cache/helpers.o: src/dwl/systray/helpers.c src/include/systray/helpers.h
+.cache/icon.o: src/dwl/systray/icon.c src/include/systray/icon.h
+.cache/item.o: src/dwl/systray/item.c src/include/systray/item.h \
+ src/include/systray/icon.h src/include/systray/watcher.h \
+ src/include/systray/helpers.h src/include/systray/icon.h \
+ src/include/systray/watcher.h
+.cache/menu.o: src/dwl/systray/menu.c src/include/systray/menu.h
+.cache/tray.o: src/dwl/systray/tray.c src/include/systray/tray.h \
+ src/include/systray/watcher.h src/include/systray/icon.h \
+ src/include/systray/item.h src/include/systray/icon.h \
+ src/include/systray/menu.h src/include/systray/watcher.h
+.cache/watcher.o: src/dwl/systray/watcher.c src/include/systray/watcher.h \
+ src/include/systray/item.h src/include/systray/icon.h \
+ src/include/systray/watcher.h src/include/systray/tray.h
+.cache/util.o: src/dwl/util/util.c src/include/util/util.h
+.cache/dbus.o: src/dwl/dbus/dbus.c src/include/systray/dbus.h \
+ src/include/util/util.h

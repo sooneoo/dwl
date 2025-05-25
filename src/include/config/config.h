@@ -38,7 +38,7 @@ static const char *const autostart[] = {
     //"timeout", "300", "swaylock -f -c 000000",
     //"timeout", "600", "swaymsg 'output * dpms off'",
     //"resume", "swaymsg 'output * dpms on'",
-    "before-sleep", "swaylock -f -c 000000", NULL
+    "before-sleep", "swaylock -f -i/home/petr/Obrázky/Wallpaper.png", NULL
 
     ,"swaybg", "-i", "/home/petr/Obrázky/Wallpaper.png", "-m", "fill", NULL
     , NULL /* terminate */
@@ -164,7 +164,7 @@ static const char * volumemute[] = {"amixer", "-q", "sset", "Master", "toggle", 
 static const char * screenshot[] = {"slurp", "|", "grim", "-g", "-" ,"screenshot.png", NULL};
 static const char * brightnessup[] = {"light", "-A", "5", NULL};
 static const char * brightnessdown[] = {"light", "-U", "5", NULL};
-static const char * screenlock[] = {"swaylock", "-f", "-c", "000000", NULL};
+static const char * screenlock[] = {"swaylock", "-f", "-i", "/home/petr/Obrázky/Wallpaper.png", NULL};
 
 /* Ctrl-Alt-Fx is used to switch to another VT, if you don't know what a VT is
  * do not remove them.

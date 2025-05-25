@@ -10,7 +10,7 @@ do
     keyboard_input_name="1:1:AT_Translated_Set_2_keyboard"
     #
     ## Date and time
-    date_and_week=$(date "+(week %-V) %Y.%m.%d")
+    date_and_week=$(date "+week %-V %Y.%m.%d")
     current_time=$(date "+%H:%M:%S")
 
     cpu_temperature=$(cat /sys/class/thermal/thermal_zone0/temp | awk '{print $1/1000 "°C"}')
@@ -106,10 +106,12 @@ do
     fi
 
     net="$(printf "%s %s %*sms" $network_active $ssid_name 4 $ping)"
-    load="$(printf " %*s%%" 3 $cpu_usage)"
-    
-    temper=$(printf "🌡 %s" $cpu_temperature)
-    echo " $net | $load | $audio_active $audio_volume | $temper | $battery_pluggedin $battery_charge | $date_and_week  $current_time "
+    load="$(printf "  %*s%%" 3 $cpu_usage)"
+    audio="$(printf "%s %*s" $audio_active 4 $audio_volume)" 
+    battery=$(printf "%s %*s" $battery_pluggedin 4 $battery_charge)
+    temper=$(printf "🌡 %*s" 5 $cpu_temperature)
+
+    echo " $net | $load | $audio | $temper | $battery | $date_and_week  $current_time "
 
     sleep 1
 done

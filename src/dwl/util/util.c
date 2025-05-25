@@ -5,7 +5,7 @@
 #include <string.h>
 #include <fcntl.h>
 
-#include "util.h"
+#include "util/util.h"
 
 void
 die(const char *fmt, ...) {
