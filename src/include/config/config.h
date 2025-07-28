@@ -21,8 +21,8 @@ enum { SchemeNorm, SchemeSel, SchemeUrg }; /* color schemes */
 static uint32_t colors[][3]                = {
 	/*               fg          bg          border    */
                                  
-	[SchemeNorm] = { 0xbbbbbbff, 0x3A3833FF, 0x3A3833FF },
-	[SchemeSel]  = { 0xeeeeeeff, 0xA2741BFF, 0x3A3833FF },
+	[SchemeNorm] = { 0xbbbbbbff, 0x222222FF, 0x3A3833FF },
+	[SchemeSel]  = { 0xeeeeeeFF, 0xCC7700FF, 0x3A3833FF },
 	[SchemeUrg]  = { 0,          0,          0x770000ff },
 };
 
