@@ -20,9 +20,9 @@ CFLAGS += -DWLR_USE_UNSTABLE
 CFLAGS +=-DVERSION=\"1.0\"
 CFLAGS += $(XWAYLAND)
 CFLAGS += $$(pkg-config --cflags $(PKGS))
-CFLAGS += -lm
+CFLAGS += -g
 
-LIBS += $$(pkg-config --libs $(PKGS))
+LIBS += $$(pkg-config --libs $(PKGS)) -lm
 
 TARGET=dwl
 CACHE=.cache

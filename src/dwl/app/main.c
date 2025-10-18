@@ -1,6 +1,7 @@
 /*
  * See LICENSE file for copyright and license details.
  */
+#include <assert.h>
 #include <dbus/dbus.h>
 #include <getopt.h>
 #include <libinput.h>
@@ -1342,10 +1343,13 @@ createmon(struct wl_listener *listener, void *data)
 	 * output (such as DPI, scale factor, manufacturer, etc).
 	 */
 	m->scene_output = wlr_scene_output_create(scene, wlr_output);
-	if (m->m.x == -1 && m->m.y == -1)
+	if (m->m.x == -1 && m->m.y == -1) {
+        assert(output_layout != NULL);
+        assert(wlr_output != NULL);
 		wlr_output_layout_add_auto(output_layout, wlr_output);
-	else
+    } else {
 		wlr_output_layout_add(output_layout, wlr_output, m->m.x, m->m.y);
+    }
 }
 
 void
@@ -1369,48 +1373,49 @@ createnotify(struct wl_listener *listener, void *data)
 	LISTEN(&toplevel->events.set_title, &c->set_title, updatetitle);
 }
 
+
 void
 createpointer(struct wlr_pointer *pointer)
 {
-	struct libinput_device *device;
-	if (wlr_input_device_is_libinput(&pointer->base)
-			&& (device = wlr_libinput_get_device_handle(&pointer->base))) {
+    struct libinput_device *device;
+    if (wlr_input_device_is_libinput(&pointer->base)
+            && (device = wlr_libinput_get_device_handle(&pointer->base))) {
 
-		if (libinput_device_config_tap_get_finger_count(device)) {
-			libinput_device_config_tap_set_enabled(device, tap_to_click);
-			libinput_device_config_tap_set_drag_enabled(device, tap_and_drag);
-			libinput_device_config_tap_set_drag_lock_enabled(device, drag_lock);
-			libinput_device_config_tap_set_button_map(device, button_map);
-		}
+        if (libinput_device_config_tap_get_finger_count(device)) {
+            libinput_device_config_tap_set_enabled(device, tap_to_click);
+            libinput_device_config_tap_set_drag_enabled(device, tap_and_drag);
+            libinput_device_config_tap_set_drag_lock_enabled(device, drag_lock);
+            libinput_device_config_tap_set_button_map(device, button_map);
+        }
 
-		if (libinput_device_config_scroll_has_natural_scroll(device))
-			libinput_device_config_scroll_set_natural_scroll_enabled(device, natural_scrolling);
+        if (libinput_device_config_scroll_has_natural_scroll(device))
+            libinput_device_config_scroll_set_natural_scroll_enabled(device, natural_scrolling);
 
-		if (libinput_device_config_dwt_is_available(device))
-			libinput_device_config_dwt_set_enabled(device, disable_while_typing);
+        if (libinput_device_config_dwt_is_available(device))
+            libinput_device_config_dwt_set_enabled(device, disable_while_typing);
 
-		if (libinput_device_config_left_handed_is_available(device))
-			libinput_device_config_left_handed_set(device, left_handed);
+        if (libinput_device_config_left_handed_is_available(device))
+            libinput_device_config_left_handed_set(device, left_handed);
 
-		if (libinput_device_config_middle_emulation_is_available(device))
-			libinput_device_config_middle_emulation_set_enabled(device, middle_button_emulation);
+        if (libinput_device_config_middle_emulation_is_available(device))
+            libinput_device_config_middle_emulation_set_enabled(device, middle_button_emulation);
 
-		if (libinput_device_config_scroll_get_methods(device) != LIBINPUT_CONFIG_SCROLL_NO_SCROLL)
-			libinput_device_config_scroll_set_method(device, scroll_method);
+        if (libinput_device_config_scroll_get_methods(device) != LIBINPUT_CONFIG_SCROLL_NO_SCROLL)
+            libinput_device_config_scroll_set_method(device, scroll_method);
 
-		if (libinput_device_config_click_get_methods(device) != LIBINPUT_CONFIG_CLICK_METHOD_NONE)
-			libinput_device_config_click_set_method(device, click_method);
+        if (libinput_device_config_click_get_methods(device) != LIBINPUT_CONFIG_CLICK_METHOD_NONE)
+            libinput_device_config_click_set_method(device, click_method);
 
-		if (libinput_device_config_send_events_get_modes(device))
-			libinput_device_config_send_events_set_mode(device, send_events_mode);
+        if (libinput_device_config_send_events_get_modes(device))
+            libinput_device_config_send_events_set_mode(device, send_events_mode);
 
-		if (libinput_device_config_accel_is_available(device)) {
-			libinput_device_config_accel_set_profile(device, accel_profile);
-			libinput_device_config_accel_set_speed(device, accel_speed);
-		}
-	}
+        if (libinput_device_config_accel_is_available(device)) {
+            libinput_device_config_accel_set_profile(device, accel_profile);
+            libinput_device_config_accel_set_speed(device, accel_speed);
+        }
+    }
 
-	wlr_cursor_attach_input_device(cursor, &pointer->base);
+    wlr_cursor_attach_input_device(cursor, &pointer->base);
 }
 
 void
@@ -2764,7 +2769,7 @@ setsel(struct wl_listener *listener, void *data)
 }
 
 int statusin(int fd, unsigned int mask, void *data) {
-	char status[1024];
+	char status[256];
 	ssize_t n;
 
 	if (mask & WL_EVENT_ERROR)
@@ -2802,12 +2807,14 @@ void setup(void) {
 	dpy = wl_display_create();
 	event_loop = wl_display_get_event_loop(dpy);
 
+    fflush(stdout);
 	/* The backend is a wlroots feature which abstracts the underlying input and
 	 * output hardware. The autocreate option will choose the most suitable
 	 * backend based on the current environment, such as opening an X11 window
 	 * if an X11 server is running. */
-	if (!(backend = wlr_backend_autocreate(event_loop, &session)))
+	if (!(backend = wlr_backend_autocreate(event_loop, &session))) {
 		die("couldn't create backend");
+    }
 
 	/* Initialize the scene graph used to lay out windows */
 	scene = wlr_scene_create();
@@ -2816,6 +2823,7 @@ void setup(void) {
 		layers[i] = wlr_scene_tree_create(&scene->tree);
 	drag_icon = wlr_scene_tree_create(&scene->tree);
 	wlr_scene_node_place_below(&drag_icon->node, &layers[LyrBlock]->node);
+
 
 	/* Autocreates a renderer, either Pixman, GLES2 or Vulkan for us. The user
 	 * can also specify a renderer using the WLR_RENDERER env var.
@@ -3235,8 +3243,11 @@ updatemons(struct wl_listener *listener, void *data)
 	/* Insert outputs that need to */
 	wl_list_for_each(m, &mons, link) {
 		if (m->wlr_output->enabled
-				&& !wlr_output_layout_get(output_layout, m->wlr_output))
+				&& !wlr_output_layout_get(output_layout, m->wlr_output)) {
+            assert(output_layout != NULL);
+            assert(m->wlr_output != NULL);
 			wlr_output_layout_add_auto(output_layout, m->wlr_output);
+        }
 	}
 
 	/* Now that we update the output layout we can get its box */
@@ -3302,7 +3313,7 @@ updatemons(struct wl_listener *listener, void *data)
 	}
 
 	if (stext[0] == '\0') {
-		//strncpy(stext, "dwl-"VERSION, sizeof(stext));
+		strncpy(stext, "dwl-"VERSION, sizeof(stext));
     }
 
 	wl_list_for_each(m, &mons, link) {
@@ -3633,6 +3644,7 @@ main(int argc, char *argv[])
 	/* Wayland requires XDG_RUNTIME_DIR for creating its communications socket */
 	if (!getenv("XDG_RUNTIME_DIR"))
 		die("XDG_RUNTIME_DIR must be set");
+
 	setup();
 	run(startup_cmd);
 	cleanup();

@@ -77,8 +77,8 @@ static const MonitorRule monrules[] = {
 	*/
 	/* defaults */
 	//{ NULL,       0.55f, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
-	{ "eDP-1",    0.5f,  1,      1.5,    layouts, WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
-
+	{ "eDP-1",    0.5f,  1,      1,    layouts, WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
+	{ "HDMI-1",    0.5f,  1,      1.5,    layouts, WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
 };
 
 /* keyboard */
