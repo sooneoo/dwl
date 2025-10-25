@@ -45,12 +45,12 @@ do
     #############
     #
     ## Battery or charger
-    battery_charge=$(upower --show-info $(upower --enumerate | grep 'BAT') | egrep "percentage" | awk '{print $2}')
-    battery_status=$(upower --show-info $(upower --enumerate | grep 'BAT') | egrep "state" | awk '{print $2}')
+    battery_charge=$(upower --show-info $(upower --enumerate | grep 'BAT') | grep "percentage" | awk '{print $2}')
+    battery_status=$(upower --show-info $(upower --enumerate | grep 'BAT') | grep "state" | awk '{print $2}')
     #
     ## Audio and multimedia
-    audio_volume=$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }')
-    audio_status=$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $4 }') 
+    audio_volume=$(pamixer --get-volume) #$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $2 }')
+    audio_status=$(pamixer --get-mute) #$(amixer sget Master | grep 'Right:' | awk -F'[][]' '{ print $4 }') 
 
     # Network
     network=$(ip route get 1.1.1.1 | grep -Po '(?<=dev\s)\w+' | cut -f1 -d ' ')
@@ -59,12 +59,12 @@ do
     ping=$(ping -W 1 -c 1 $gateway | tail -1| awk '{print $4}' | cut -d '/' -f 2 | cut -d '.' -f 1)
 
 
-    if [ $audio_status = "on" ];
+    if [[ $audio_status == "false" ]];
     then
-        if [ $audio_volume == "100%" ];
+	if (( $audio_volume == 100 ));
         then
             audio_active=""
-        elif [ $audio_volume == "0%" ];
+    	elif (( $audio_volume == 0 ));
         then
             audio_active=""
         else
@@ -76,7 +76,7 @@ do
 
     batter_percentage=${battery_charge%\%}
 
-    if [ $battery_status = "discharging" ];
+    if [[ $battery_status == "discharging" ]];
     then
         if [ $batter_percentage -ge 80 ] && [ $batter_percentage -le 100 ];
         then
