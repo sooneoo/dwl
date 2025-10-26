@@ -6,3 +6,4 @@ pacman -S upower
 pacman -S pamixer pipewire pipewire-alsa pipewire-pulse wireplumber
 
 
+pacman -S brightnessctl

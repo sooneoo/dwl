@@ -3,6 +3,10 @@
                         ((hex >> 16) & 0xFF) / 255.0f, \
                         ((hex >> 8) & 0xFF) / 255.0f, \
                         (hex & 0xFF) / 255.0f }
+
+#define BGIMG "/home/petr/.config/dwl/wallpaper.png"
+
+
 /* appearance */
 static const int sloppyfocus               = 1;  /* focus follows mouse */
 static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
@@ -38,9 +42,9 @@ static const char *const autostart[] = {
     //"timeout", "300", "swaylock -f -c 000000",
     //"timeout", "600", "swaymsg 'output * dpms off'",
     //"resume", "swaymsg 'output * dpms on'",
-    "before-sleep", "swaylock -f -i/home/petr/Obrázky/Wallpaper.png", NULL
+    "before-sleep", "swaylock -f -i"BGIMG, NULL
 
-    ,"swaybg", "-i", "/home/petr/Obrázky/Wallpaper.png", "-m", "fill", NULL
+    ,"swaybg", "-i", BGIMG, "-m", "fill", NULL
     , NULL /* terminate */
 };
 
@@ -158,13 +162,14 @@ static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TA
 /* commands */
 static const char * termcmd[] = { "alacritty", NULL };
 static const char * menucmd[] = { "bemenu-run", NULL };
-static const char * volumeup[] = {"amixer", "-q", "sset", "Master", "5%+", NULL };
-static const char * volumedown[] = {"amixer", "-q", "sset", "Master", "5%-", NULL };
-static const char * volumemute[] = {"amixer", "-q", "sset", "Master", "toggle", NULL};
-static const char * screenshot[] = {"slurp", "|", "grim", "-g", "-" ,"screenshot.png", NULL};
-static const char * brightnessup[] = {"light", "-A", "5", NULL};
-static const char * brightnessdown[] = {"light", "-U", "5", NULL};
-static const char * screenlock[] = {"swaylock", "-f", "-i", "/home/petr/Obrázky/Wallpaper.png", NULL};
+
+static const char * volumeup[] = {"pamixer", "--increase", "5", NULL };
+static const char * volumedown[] = {"pamixer", "--decrease", "5", NULL };
+static const char * volumemute[] = {"pamixer", "--toggle-mute", NULL};
+static const char * screenshot[] = {"slurp", "|", "grim", NULL};
+static const char * brightnessup[] = {"brightnessctl", "set", "+10%", NULL};
+static const char * brightnessdown[] = {"brightnessctl", "set", "10%-", NULL};
+static const char * screenlock[] = {"swaylock", "-f", "-i", BGIMG, NULL};
 
 /* Ctrl-Alt-Fx is used to switch to another VT, if you don't know what a VT is
  * do not remove them.
