@@ -18,7 +18,9 @@ static const float bordercolor[]           = COLOR(0x444444ff);
 static const float focuscolor[]            = COLOR(0x005577ff);
 static const float urgentcolor[]           = COLOR(0xff0000ff);
 
-static const char *fonts[]                 = {"monospace:size=10"};
+
+#define BAR_FONT "monospace:size=13" 
+static const char *fonts[]                 = {BAR_FONT};
 
 enum { SchemeNorm, SchemeSel, SchemeUrg }; /* color schemes */
 
@@ -81,7 +83,7 @@ static const MonitorRule monrules[] = {
 	*/
 	/* defaults */
 	//{ NULL,       0.55f, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
-	{ "eDP-1",    0.5f,  1,      1,    layouts, WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
+	{ "eDP-1",    0.5f,  1,      1.2,    layouts, WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
 	{ "HDMI-1",    0.5f,  1,      1.5,    layouts, WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
 };
 
